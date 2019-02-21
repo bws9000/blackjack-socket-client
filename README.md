@@ -1,1 +1,1 @@
-ECHO is on.
+Multiplayer Blackjack SocketIO Client
