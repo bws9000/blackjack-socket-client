@@ -125,6 +125,5 @@ gradle-app.setting
 **/build/
 
 ### Other Goodies ###
-*.properties
 
 # End of https://www.gitignore.io/api/java,gradle,intellij
