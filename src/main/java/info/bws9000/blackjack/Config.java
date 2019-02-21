@@ -1,4 +1,4 @@
-package com.bws9000.blackjack;
+package info.bws9000.blackjack;
 
 import java.io.FileInputStream;
 import java.util.Properties;

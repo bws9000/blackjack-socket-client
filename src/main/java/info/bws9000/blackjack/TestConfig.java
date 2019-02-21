@@ -1,4 +1,4 @@
-package com.bws9000.blackjack;
+package info.bws9000.blackjack;
 
 public class TestConfig {
     public static void main(String argv[]){

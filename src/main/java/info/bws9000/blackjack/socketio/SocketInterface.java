@@ -1,4 +1,4 @@
-package com.bws9000.blackjack.socketio;
+package info.bws9000.blackjack.socketio;
 
 import com.github.nkzawa.socketio.client.Socket;
 

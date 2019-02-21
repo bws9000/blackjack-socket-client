@@ -1,6 +1,6 @@
-package com.bws9000.blackjack.socketio.blackjack;
+package info.bws9000.blackjack.socketio.blackjack;
 
-import com.bws9000.blackjack.socketio.SocketIO;
+import info.bws9000.blackjack.socketio.SocketIO;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.Socket;
