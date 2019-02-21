@@ -1,7 +1,8 @@
 package com.bws9000.blackjack.socketio;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
+
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 public class SocketIO implements SocketInterface {
 

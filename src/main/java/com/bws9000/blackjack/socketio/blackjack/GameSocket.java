@@ -1,9 +1,9 @@
 package com.bws9000.blackjack.socketio.blackjack;
 
 import com.bws9000.blackjack.socketio.SocketIO;
-import io.socket.client.Ack;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Ack;
+import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONObject;
 
 public class GameSocket {
