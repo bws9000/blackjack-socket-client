@@ -11,7 +11,7 @@ public class GameSocket {
     private Socket io;
     private String DEV_PASS = "bws9000";
 
-    public GameSocket(String uri){
+    public GameSocket(String uri) {
         //init socket
         SocketIO socketIO = new SocketIO();
         this.io = socketIO.getSocket(uri);
@@ -40,7 +40,7 @@ public class GameSocket {
         });
     }
 
-    public void connectEvent(){
+    public void connectEvent() {
         this.io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
             @Override
@@ -48,7 +48,7 @@ public class GameSocket {
                 JSONObject json = new JSONObject();
                 try {
                     json.put("devuser", DEV_PASS);
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 io.emit("authentication", json);
@@ -73,11 +73,11 @@ public class GameSocket {
         });
     }
 
-    private void authorizeClientAck(String data){
+    private void authorizeClientAck(String data) {
         this.someEvent();
     }
 
-    private void disconnectEvent(){
+    private void disconnectEvent() {
         this.io.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
 
             @Override
