@@ -40,7 +40,6 @@ public class GameSocket {
         });
     }
 
-
     public void connectEvent(){
         this.io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
