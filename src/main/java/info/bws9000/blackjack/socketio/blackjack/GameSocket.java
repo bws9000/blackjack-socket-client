@@ -16,7 +16,12 @@ public class GameSocket{
         //init socket
         SocketIO socketIO = new SocketIO();
         io = socketIO.getSocket(uri);
+
+        //add events
         this.disconnectEvent();
+        this.connectError();
+        this.timeOut();
+        this.reConnect();
         //connect
         io.connect();
     }
@@ -25,6 +30,38 @@ public class GameSocket{
     /////////////////////////////////connect
     private void authorizeClientAck() {
         //
+    }
+
+    public void reConnect() {
+        io.on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                System.out.println(" *** connection reconnected ***");
+                System.exit(0);
+            }
+        });
+    }
+
+    public void connectError() {
+        io.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                System.out.println(" *** connection error ***");
+                System.exit(0);
+            }
+        });
+
+    }
+
+    public void timeOut() {
+        io.on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                System.out.println(" *** connection timed out ***");
+                System.exit(0);
+            }
+        });
+
     }
 
     public void connectEvent() {
@@ -51,7 +88,6 @@ public class GameSocket{
                 Ack ack = new Ack() {
                     @Override
                     public void call(Object... objects) {
-                        System.out.println("client authenticated Ack()");
                         authorizeClientAck();
                     }
                 };
@@ -72,8 +108,8 @@ public class GameSocket{
 
     //////////////////////////////////game
     public void initGame(String param, SocketCallback callback) {
-        io.emit("someevent", "{\"hi\":\"hi\"}");
-        io.on("event", new Emitter.Listener() {
+        io.emit("init", "{\"hi\":\"hi\"}");
+        io.on("initevent", new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
