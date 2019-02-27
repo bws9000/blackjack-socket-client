@@ -1,15 +1,14 @@
 package info.bws9000.blackjack.socketio.blackjack;
 
-import info.bws9000.blackjack.socketio.SocketIO;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONObject;
 
-public class GameSocket{
+public class GameSocket implements GameSocketInterface{
 
     private Socket io;
-    private String DEV_PASS = "bws9000";
+    private String DEV_PASS = "bws9000"; //merry christmas
 
     public GameSocket(String uri) {
 
@@ -17,17 +16,36 @@ public class GameSocket{
         SocketIO socketIO = new SocketIO();
         io = socketIO.getSocket(uri);
 
-        //add events
+        //add some events
         this.disconnectEvent();
         this.connectError();
         this.timeOut();
         this.reConnect();
+
         //connect
         io.connect();
     }
 
 
-    /////////////////////////////////connect
+    public void socketOnEmitEvent(String param, GameSocketCallback callback,
+                           String emitEvent, String onEvent) {
+        io.emit(emitEvent, param);
+        io.on(onEvent, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                Ack ack = new Ack() {
+                    @Override
+                    public void call(Object... objects) {
+                        callback.success(args[0].toString());
+                    }
+                };
+                ack.call(args);
+            }
+        });
+    }
+
+    ///////////////////////////////////
     private void authorizeClientAck() {
         //
     }
@@ -64,6 +82,19 @@ public class GameSocket{
 
     }
 
+    private void disconnectEvent() {
+        io.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                System.out.println("client disconnected");
+            }
+        });
+    }
+    ///////////////////////////////////
+
+
+
     public void connectEvent() {
         io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
@@ -96,42 +127,10 @@ public class GameSocket{
         });
     }
 
-    private void disconnectEvent() {
-        io.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                System.out.println("client disconnected");
-            }
-        });
-    }
-
-    //////////////////////////////////game
-    public void initGame(String param, SocketCallback callback) {
-        io.emit("init", "{\"hi\":\"hi\"}");
-        io.on("initevent", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                Ack ack = new Ack() {
-                    @Override
-                    public void call(Object... objects) {
-                        //System.out.println("> :"+args[0]);
-                        callback.success(args[0].toString());
-                    }
-                };
-                ack.call(args);
-            }
-        });
-    }
 
     //test
     public static void main(String argv[]){
-        GameSocket gs = new GameSocket("");
+        GameSocket gs = new GameSocket("http://localhost:3000");
         gs.connectEvent();
     }
-
-
-
-
 }

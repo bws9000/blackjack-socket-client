@@ -1,10 +1,10 @@
-package info.bws9000.blackjack.socketio;
+package info.bws9000.blackjack.socketio.blackjack;
 
 
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
-public class SocketIO implements SocketInterface {
+public class SocketIO {
 
     Socket socket;
 
