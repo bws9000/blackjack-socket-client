@@ -12,7 +12,7 @@ public class SocketIO {
 
     public Socket getSocket(String uri){
         try {
-            socket = IO.socket(uri + "/blackjack");
+            socket = IO.socket(uri);
         }catch(Exception e){
             e.printStackTrace();
         }

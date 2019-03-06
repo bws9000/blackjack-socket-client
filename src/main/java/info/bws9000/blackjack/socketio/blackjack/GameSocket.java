@@ -5,7 +5,7 @@ import com.github.nkzawa.socketio.client.Ack;
 import com.github.nkzawa.socketio.client.Socket;
 import org.json.JSONObject;
 
-public class GameSocket implements GameSocketInterface{
+public class GameSocket implements GameSocketInterface {
 
     private Socket io;
     private String DEV_PASS = "bws9000"; //merry christmas
@@ -17,32 +17,71 @@ public class GameSocket implements GameSocketInterface{
         io = socketIO.getSocket(uri);
 
         //add some events
-        this.disconnectEvent();
+        //this.disconnectEvent();
         this.connectError();
         this.timeOut();
         this.reConnect();
 
         //connect
         io.connect();
-    }
 
-
-    public void socketOnEmitEvent(String param, GameSocketCallback callback,
-                           String emitEvent, String onEvent) {
-        io.emit(emitEvent, param);
-        io.on(onEvent, new Emitter.Listener() {
+        io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
-                Ack ack = new Ack() {
-                    @Override
-                    public void call(Object... objects) {
-                        callback.success(args[0].toString());
-                    }
-                };
-                ack.call(args);
+                //System.out.println("EVENT_CONNECT");
             }
+
         });
+    }
+
+
+    public void initGameSocket(String param, GameSocketCallback callback) {
+        io.emit("init", param)
+                .on("initEmit", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                callback.success(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+                });
+    }
+
+    public void createJoinTable(String param, GameSocketCallback callback) {
+        io.emit("createTable", param)
+                .on("createTableEmit", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                callback.success(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+                });
+    }
+
+    public void test(String param, GameSocketCallback callback) {
+        io.emit("test", param)
+                .on("testEmit", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                callback.success(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+                });
     }
 
     ///////////////////////////////////
@@ -94,7 +133,6 @@ public class GameSocket implements GameSocketInterface{
     ///////////////////////////////////
 
 
-
     public void connectEvent() {
         io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
@@ -109,9 +147,7 @@ public class GameSocket implements GameSocketInterface{
                 io.emit("authentication", json);
             }
 
-        });
-
-        io.on("authenticated", new Emitter.Listener() {
+        }).on("authenticated", new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
@@ -129,7 +165,7 @@ public class GameSocket implements GameSocketInterface{
 
 
     //test
-    public static void main(String argv[]){
+    public static void main(String argv[]) {
         GameSocket gs = new GameSocket("http://localhost:3000");
         gs.connectEvent();
     }
