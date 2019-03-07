@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.bws9000'
-version '0.2'
+version '0.3'
 
 sourceCompatibility = 1.8
 
