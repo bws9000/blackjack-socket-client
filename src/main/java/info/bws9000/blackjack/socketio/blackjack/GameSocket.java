@@ -44,6 +44,7 @@ public class GameSocket implements GameSocketInterface {
                         Ack ack = new Ack() {
                             @Override
                             public void call(Object... objects) {
+                                //System.out.println(args[0].toString());
                                 callback.success(args[0].toString());
                             }
                         };
@@ -60,6 +61,7 @@ public class GameSocket implements GameSocketInterface {
                         Ack ack = new Ack() {
                             @Override
                             public void call(Object... objects) {
+                                System.out.println(args[0].toString());
                                 callback.success(args[0].toString());
                             }
                         };
