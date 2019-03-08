@@ -35,6 +35,22 @@ public class GameSocket implements GameSocketInterface {
         });
     }
 
+    public void getSocketState(String param, GameSocketCallback callback) {
+        io.emit("socketState", param)
+                .on("socketStateEmit", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                callback.success(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+                });
+    }
+
 
     public void initGameSocket(String param, GameSocketCallback callback) {
         io.emit("init", param)
