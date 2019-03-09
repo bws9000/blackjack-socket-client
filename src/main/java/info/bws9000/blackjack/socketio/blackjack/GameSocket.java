@@ -32,6 +32,17 @@ public class GameSocket implements GameSocketInterface {
                 //System.out.println("EVENT_CONNECT");
             }
 
+        }).on("heartBeat", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Ack ack = new Ack() {
+                    @Override
+                    public void call(Object... objects) {
+                        io.emit("bringThatBeatBack");
+                    }
+                };
+                ack.call(args);
+            }
         });
     }
 
