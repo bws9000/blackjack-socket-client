@@ -15,6 +15,7 @@ public class GameSocket {
     private List<GameSocketInterface> listeners = new ArrayList<GameSocketInterface>();
 
     private String socketId;
+    private int testcount = 0;
 
 
     public GameSocket(String uri) {
@@ -39,8 +40,29 @@ public class GameSocket {
                 //System.out.println("EVENT_CONNECT");
             }
 
+        }).on("heartBeat", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Ack ack = new Ack() {
+                    @Override
+                    public void call(Object... objects) {
+                        onHeartBeat(args[0].toString());
+                    }
+                };
+                ack.call(args);
+            }
         });
     }
+
+    //heartBeat
+    public void onHeartBeat(String data){
+        for (GameSocketInterface gsi : listeners)
+            gsi.onHeartBeat(data);
+    }
+    public void emitHeartBeat(String param) {
+        io.emit("bringThatBeatBack", param);
+    }
+
 
     public void addListener(GameSocketInterface gsi) {
         listeners.add(gsi);
@@ -117,22 +139,6 @@ public class GameSocket {
                 });
     }
 
-    public void heartBeat(String param, GameSocketCallback callback) {
-        io.emit("bringThatBeatBack", param)
-                .on("heartBeat", new Emitter.Listener() {
-                    @Override
-                    public void call(Object... args) {
-                        Ack ack = new Ack() {
-                            @Override
-                            public void call(Object... objects) {
-                                //callback.success(args[0].toString());
-                            }
-                        };
-                        ack.call(args);
-                    }
-                });
-    }
-
 
 
 
@@ -165,8 +171,7 @@ public class GameSocket {
         io.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                System.out.println(" *** connection error ***");
-                //System.exit(0);
+                //
             }
         });
 
@@ -176,8 +181,7 @@ public class GameSocket {
         io.on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
             @Override
             public void call(Object... objects) {
-                System.out.println(" *** connection timed out ***");
-                System.exit(0);
+                //
             }
         });
 
@@ -188,7 +192,7 @@ public class GameSocket {
 
             @Override
             public void call(Object... args) {
-                System.out.println("client disconnected");
+                //
             }
         });
     }

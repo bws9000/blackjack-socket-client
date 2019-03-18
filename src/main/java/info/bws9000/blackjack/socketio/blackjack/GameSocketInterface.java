@@ -4,6 +4,7 @@ public interface GameSocketInterface {
     void connectAuthEvent();
     void clientAuthorizedEvent();
     void reConnect();
+    void onHeartBeat(String data);
     void connectError();
     void timeOut();
     void disconnectEvent();
