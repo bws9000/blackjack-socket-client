@@ -13,34 +13,60 @@ public class GameSocket {
     private Socket io;
     private String DEV_PASS = "bws9000"; //merry christmas
     private List<GameSocketInterface> listeners = new ArrayList<GameSocketInterface>();
-
     private String socketId;
-    private int testcount = 0;
-
 
     public GameSocket(String uri) {
 
-        //init socket
         SocketIO socketIO = new SocketIO();
         io = socketIO.getSocket(uri);
-
-        //add some events
-        //this.disconnectEvent();
-        this.connectError();
-        this.timeOut();
-        this.reConnect();
-
-        //connect
         io.connect();
 
-        io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+        //socket EVENT_
+        io.on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                reConnect();
+            }
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                disconnectEvent();
+            }
+        }).on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
-                //System.out.println("EVENT_CONNECT");
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("devuser", DEV_PASS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                io.emit("authentication", json);
+
+                //hi connectAuthEvent()
+                for (GameSocketInterface gsi : listeners)
+                    gsi.connectAuthEvent();
+
             }
 
-        }).on("heartBeat", new Emitter.Listener() {
+        }).on("authenticated", new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                //
+                Ack ack = new Ack() {
+                    @Override
+                    public void call(Object... objects) {
+                        clientAuthorizedEvent();
+                    }
+                };
+                ack.call(args);
+            }
+        })
+
+        //other events
+        .on("heartBeat", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 Ack ack = new Ack() {
@@ -51,7 +77,41 @@ public class GameSocket {
                 };
                 ack.call(args);
             }
+        }).on("socketStateEmit", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Ack ack = new Ack() {
+                    @Override
+                    public void call(Object... objects) {
+                        //callback.success(args[0].toString());
+                        onGetSocketState(args[0].toString());
+                    }
+                };
+                ack.call(args);
+            }
         });
+    }
+
+    public void addListener(GameSocketInterface gsi) {
+        listeners.add(gsi);
+    }
+
+    //EVENT_
+    public void disconnectEvent() {
+        //
+        for (GameSocketInterface gsi : listeners)
+            gsi.disconnectEvent();
+    }
+
+    public void reConnect(){
+        try {
+            JSONObject jsonObj = new JSONObject("{\"socketId\":" + "\"" + socketId + "\"}");
+            io.emit("reconnection", jsonObj);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (GameSocketInterface gsi : listeners)
+            gsi.reConnect();
     }
 
     //heartBeat
@@ -63,25 +123,14 @@ public class GameSocket {
         io.emit("bringThatBeatBack", param);
     }
 
-
-    public void addListener(GameSocketInterface gsi) {
-        listeners.add(gsi);
+    //socket state
+    public void onGetSocketState(String data){
+        //
+        for (GameSocketInterface gsi : listeners)
+            gsi.onGetSocketState(data);
     }
-
-    public void getSocketState(String param, GameSocketCallback callback) {
-        io.emit("socketState", param)
-                .on("socketStateEmit", new Emitter.Listener() {
-                    @Override
-                    public void call(Object... args) {
-                        Ack ack = new Ack() {
-                            @Override
-                            public void call(Object... objects) {
-                                callback.success(args[0].toString());
-                            }
-                        };
-                        ack.call(args);
-                    }
-                });
+    public void emitSocketState(String param) {
+        io.emit("socketState", param);
     }
 
 
@@ -123,115 +172,17 @@ public class GameSocket {
                 });
     }
 
-    public void test(String param, GameSocketCallback callback) {
-        io.emit("test", param)
-                .on("testEmit", new Emitter.Listener() {
-                    @Override
-                    public void call(Object... args) {
-                        Ack ack = new Ack() {
-                            @Override
-                            public void call(Object... objects) {
-                                callback.success(args[0].toString());
-                            }
-                        };
-                        ack.call(args);
-                    }
-                });
-    }
-
-
-
-
     private void clientAuthorizedEvent() {
-        //hi
+        //
         for (GameSocketInterface gsi : listeners)
             gsi.clientAuthorizedEvent();
     }
 
 
-    public void reConnect() {
-        io.on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... objects) {
-                try {
-                    JSONObject jsonObj = new JSONObject("{\"socketId\":" + "\"" + socketId + "\"}");
-                    io.emit("reconnection", jsonObj);
-                }catch(Exception e) {
-                    e.printStackTrace();
-                }
-
-                //hi reconnect()
-                for (GameSocketInterface gsi : listeners)
-                    gsi.reConnect();
-            }
-        });
-    }
-
-    public void connectError() {
-        io.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
-            @Override
-            public void call(Object... objects) {
-                //
-            }
-        });
-
-    }
-
-    public void timeOut() {
-        io.on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
-            @Override
-            public void call(Object... objects) {
-                //
-            }
-        });
-
-    }
-
-    private void disconnectEvent() {
-        io.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                //
-            }
-        });
-    }
-    ///////////////////////////////////
-
-
     public void connectAuthEvent() {
-        io.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                JSONObject json = new JSONObject();
-                try {
-                    json.put("devuser", DEV_PASS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                io.emit("authentication", json);
-
-                //hi connectAuthEvent()
-                for (GameSocketInterface gsi : listeners)
-                    gsi.connectAuthEvent();
-
-            }
-
-        }).on("authenticated", new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                //
-                Ack ack = new Ack() {
-                    @Override
-                    public void call(Object... objects) {
-                        clientAuthorizedEvent();
-                    }
-                };
-                ack.call(args);
-            }
-        });
+        //
+        for (GameSocketInterface gsi : listeners)
+            gsi.connectAuthEvent();
     }
 
 
