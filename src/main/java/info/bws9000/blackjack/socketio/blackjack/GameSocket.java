@@ -86,7 +86,6 @@ public class GameSocket {
                             @Override
                             public void call(Object... objects) {
                                 try {
-                                    System.out.println("initEmit: " + args[0].toString());
                                     onInitEmit(args[0].toString());//start game
                                     JSONObject obj = new JSONObject(args[0].toString());
                                     socketId = obj.getString("socketId");
