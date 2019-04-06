@@ -57,10 +57,6 @@ public class GameSocket {
                 }
                 io.emit("authentication", json);
 
-                //hi connectAuthEvent()
-                for (GameSocketInterface gsi : listeners)
-                    gsi.connectAuthEvent();
-
             }
 
         }).on("authenticated", new Emitter.Listener() {
