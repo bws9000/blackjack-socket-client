@@ -131,7 +131,20 @@ public class GameSocket {
                     };
                     ack.call(args);
                 }
-        });
+        })
+                .on("joinTable", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                onJoinTable(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+                    });
+
     }
 
     /**
@@ -171,6 +184,10 @@ public class GameSocket {
             gsi.onCreateTableAndJoined(data);
     }
 
+    public void onJoinTable(String table){
+        for (GameSocketInterface gsi : listeners)
+            gsi.onJoinTable(table);
+    }
 
     //heartBeat
     public void onHeartBeat(String data) {
