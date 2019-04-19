@@ -138,6 +138,7 @@ public class GameSocket {
                         Ack ack = new Ack() {
                             @Override
                             public void call(Object... objects) {
+
                                 onJoinTable(args[0].toString());
                             }
                         };
@@ -185,7 +186,7 @@ public class GameSocket {
     }
 
     public void emitJoinTable(String table){
-        io.emit("emitJoinTable");
+        io.emit("emitJoinTable",table);
     }
 
     public void onJoinTable(String data){
