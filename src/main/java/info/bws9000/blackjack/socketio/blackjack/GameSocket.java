@@ -132,7 +132,7 @@ public class GameSocket {
                     ack.call(args);
                 }
         })
-                .on("joinTable", new Emitter.Listener() {
+                .on("emitJoinTable", new Emitter.Listener() {
                     @Override
                     public void call(Object... args) {
                         Ack ack = new Ack() {
@@ -184,9 +184,13 @@ public class GameSocket {
             gsi.onCreateTableAndJoined(data);
     }
 
-    public void onJoinTable(String table){
+    public void emitJoinTable(String table){
+        io.emit("emitJoinTable");
+    }
+
+    public void onJoinTable(String data){
         for (GameSocketInterface gsi : listeners)
-            gsi.onJoinTable(table);
+            gsi.onJoinTable(data);
     }
 
     //heartBeat
