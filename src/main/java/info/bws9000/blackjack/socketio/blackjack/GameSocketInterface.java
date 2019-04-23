@@ -8,6 +8,7 @@ package info.bws9000.blackjack.socketio.blackjack;
  */
 public interface GameSocketInterface {
     void onJoinTable(String data);
+    void onListTables(String tables);
     void onCreateTableAndJoined(String data);
     void connectAuthEvent();
     void reConnect();

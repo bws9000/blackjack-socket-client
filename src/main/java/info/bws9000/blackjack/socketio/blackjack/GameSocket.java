@@ -138,13 +138,26 @@ public class GameSocket {
                         Ack ack = new Ack() {
                             @Override
                             public void call(Object... objects) {
-
                                 onJoinTable(args[0].toString());
                             }
                         };
                         ack.call(args);
                     }
-                    });
+                    })
+
+
+                .on("emitListTables", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        Ack ack = new Ack() {
+                            @Override
+                            public void call(Object... objects) {
+                                onListTables(args[0].toString());
+                            }
+                        };
+                        ack.call(args);
+                    }
+        });
 
     }
 
@@ -185,8 +198,31 @@ public class GameSocket {
             gsi.onCreateTableAndJoined(data);
     }
 
+
+    /**
+     * Emit to server to join a table "room"
+     * @param table name
+     */
     public void emitJoinTable(String table){
         io.emit("emitJoinTable",table);
+    }
+
+    /**
+     * Emit to server to get initiate
+     * return of active tables
+     * @param param empty
+     */
+    public void emitGetActiveTables(){
+        io.emit("emitGetActiveTables");
+    }
+
+    /**
+     * return of active tables
+     * @param String tables
+     */
+    public void onListTables(String tables){
+        for (GameSocketInterface gsi : listeners)
+            gsi.onListTables(tables);
     }
 
     public void onJoinTable(String data){
